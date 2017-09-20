@@ -26,11 +26,11 @@ namespace Trady.Analysis.Backtest
 
         public event BuyHandler OnBought;
 
-        public delegate void BuyHandler(IEnumerable<Candle> candles, int index, DateTime dateTime, decimal buyPrice, int quantity, decimal absCashFlow, decimal currentCashAmount);
+        public delegate void BuyHandler(IEnumerable<Candle> candles, int index, DateTime dateTime, decimal buyPrice, decimal quantity, decimal absCashFlow, decimal currentCashAmount);
 
         public event SellHandler OnSold;
 
-        public delegate void SellHandler(IEnumerable<Candle> candles, int index, DateTime dateTime, decimal sellPrice, int quantity, decimal absCashFlow, decimal currentCashAmount, decimal plRatio);
+        public delegate void SellHandler(IEnumerable<Candle> candles, int index, DateTime dateTime, decimal sellPrice, decimal quantity, decimal absCashFlow, decimal currentCashAmount, decimal plRatio);
 
         public Task<Result> RunAsync(decimal principal, decimal premium = 1.0m, DateTime? startTime = null, DateTime? endTime = null)
             => Task.Factory.StartNew(() => Run(principal, premium, startTime, endTime));
@@ -93,7 +93,7 @@ namespace Trady.Analysis.Backtest
             if (assetCashMap.TryGetValue(indexedCandle.BackingList, out decimal cash))
             {
                 var nextCandle = indexedCandle.Next;
-                int quantity = Convert.ToInt32(Math.Floor((cash - premium) / nextCandle.Open));
+                decimal quantity = (cash - premium) / nextCandle.Open;
 
                 decimal cashOut = nextCandle.Open * quantity + premium;
                 assetCashMap[indexedCandle.BackingList] -= cashOut;
@@ -109,6 +109,7 @@ namespace Trady.Analysis.Backtest
             {
                 var nextCandle = indexedCandle.Next;
                 var lastTransaction = transactions.LastOrDefault(t => t.Candles.Equals(indexedCandle.BackingList));
+                if (lastTransaction == null) return;
                 if (lastTransaction.Type == TransactionType.Sell)
                     return;
 

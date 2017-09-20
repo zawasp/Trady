@@ -6,7 +6,7 @@ namespace Trady.Analysis.Backtest
 {
     public class Transaction : IEquatable<Transaction>
     {
-        public Transaction(IEnumerable<Candle> candles, int index, DateTime dateTime, TransactionType type, int quantity, decimal absCashFlow)
+        public Transaction(IEnumerable<Candle> candles, int index, DateTime dateTime, TransactionType type, decimal quantity, decimal absCashFlow)
         {
             Candles = candles;
             Index = index;
@@ -24,7 +24,7 @@ namespace Trady.Analysis.Backtest
 
         public TransactionType Type { get; }
 
-        public int Quantity { get; }
+        public decimal Quantity { get; }
 
         public decimal AbsoluteCashFlow { get; }
 
