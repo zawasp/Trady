@@ -44,7 +44,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsTrue(t => t >= coefficient);
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsRsiOverbought)}: PeriodCount: {periodCount} Coefficient: {coefficient} DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsRsiOverbought)} PeriodCount: {periodCount} Coefficient: {coefficient} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -55,7 +55,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsTrue(t => t <= coefficient);
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsRsiOversold)}: PeriodCount: {periodCount} Coefficient: {coefficient} DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsRsiOversold)} PeriodCount: {periodCount} Coefficient: {coefficient} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -92,7 +92,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsTrue(t => ic.Close < t - (percent * t / 100));
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBelowEma)}: PeriodCount: {periodCount} Percent: {percent} DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBelowEma)} PeriodCount: {periodCount} Percent: {percent} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -199,7 +199,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsPositive();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHistoricalHighestHigh)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHistoricalHighestHigh)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -210,7 +210,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsPositive();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHistoricalHighestClose)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHistoricalHighestClose)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -221,7 +221,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsNegative();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHistoricalLowestLow)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHistoricalLowestLow)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -232,7 +232,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsNegative();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHistoricalLowestClose)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHistoricalLowestClose)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -243,7 +243,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsPositive();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHighestHigh)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHighestHigh)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -254,7 +254,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsPositive();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingHighestClose)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingHighestClose)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -265,7 +265,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsNegative();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingLowestLow)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingLowestLow)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
@@ -276,7 +276,7 @@ namespace Trady.Analysis
             var result = tick != null && tick.Tick.IsNegative();
             if (result)
             {
-                Debug.WriteLine($"{nameof(IsBreakingLowestClose)}: DateTime: {ic.DateTime} ClosePrice: {ic.Close} Tick: {tick.Tick}");
+                Debug.WriteLine($"{ic.DateTime} {nameof(IsBreakingLowestClose)} ClosePrice: {ic.Close} Tick: {tick.Tick}");
             }
             return result;
         }
