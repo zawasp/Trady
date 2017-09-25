@@ -39,7 +39,13 @@ namespace Trady.Analysis.Indicator
         public int PeriodCount { get; }
 
         protected override decimal? ComputeByIndexImpl(IReadOnlyList<decimal> mappedInputs, int index)
-            => _uEma[index] / _dEma[index];
+        {
+            if (_dEma[index] != 0)
+            {
+                return _uEma[index] / _dEma[index];
+            }
+            return null;
+        }
     }
 
     public class RelativeStrengthByTuple : RelativeStrength<decimal, decimal?>

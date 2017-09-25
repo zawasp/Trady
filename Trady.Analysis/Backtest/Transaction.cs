@@ -6,11 +6,12 @@ namespace Trady.Analysis.Backtest
 {
     public class Transaction : IEquatable<Transaction>
     {
-        public Transaction(IEnumerable<Candle> candles, int index, DateTime dateTime, TransactionType type, decimal quantity, decimal absCashFlow)
+        public Transaction(IEnumerable<Candle> candles, int index, DateTime dateTime, decimal price, TransactionType type, decimal quantity, decimal absCashFlow)
         {
             Candles = candles;
             Index = index;
             DateTime = dateTime;
+            Price = price;
             Type = type;
             Quantity = quantity;
             AbsoluteCashFlow = absCashFlow;
@@ -28,7 +29,9 @@ namespace Trady.Analysis.Backtest
 
         public decimal AbsoluteCashFlow { get; }
 
+        public decimal Price { get; }
+
         public bool Equals(Transaction other)
-            => Candles.Equals(other.Candles) && Index == other.Index && Type == other.Type && Quantity == other.Quantity && AbsoluteCashFlow == other.AbsoluteCashFlow;
+            => Candles.Equals(other.Candles) && Index == other.Index && Type == other.Type && Quantity == other.Quantity && AbsoluteCashFlow == other.AbsoluteCashFlow && Price == other.Price;
     }
 }

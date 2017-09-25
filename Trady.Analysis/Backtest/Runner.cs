@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -15,8 +16,8 @@ namespace Trady.Analysis.Backtest
         private Predicate<IndexedCandle> _buyRule, _sellRule;
 
         internal Runner(
-            IDictionary<IEnumerable<Candle>, int> weightings, 
-            Predicate<IndexedCandle> buyRule, 
+            IDictionary<IEnumerable<Candle>, int> weightings,
+            Predicate<IndexedCandle> buyRule,
             Predicate<IndexedCandle> sellRule)
         {
             _weightings = weightings;
@@ -73,7 +74,7 @@ namespace Trady.Analysis.Backtest
                 => !isPreviousTransactionA(transactions, ic.Context, TransactionType.Buy) && _buyRule(ic);
 
             Predicate<IndexedCandle> sellRule = ic
-                => !isPreviousTransactionA(transactions, ic.Context, TransactionType.Sell) && _sellRule(ic);
+                => !isPreviousTransactionA(transactions, ic.Context, TransactionType.Sell)  && _sellRule(ic);
 
             Func<IndexedCandle, int, (TransactionType, IndexedCandle)> outputFunc = (ic, i) =>
             {
@@ -93,13 +94,17 @@ namespace Trady.Analysis.Backtest
             if (assetCashMap.TryGetValue(indexedCandle.BackingList, out decimal cash))
             {
                 var nextCandle = indexedCandle.Next;
-                decimal quantity = (cash - premium) / nextCandle.Open;
+                if (nextCandle == null) return;
+                var quantity = cash / (nextCandle.Open * (100 - premium) / 100);
 
-                decimal cashOut = nextCandle.Open * quantity + premium;
+                var cashOut = cash;
                 assetCashMap[indexedCandle.BackingList] -= cashOut;
 
-                transactions.Add(new Transaction(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, TransactionType.Buy, quantity, cashOut));
-                OnBought?.Invoke(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, nextCandle.Open, quantity, cashOut, assetCashMap[indexedCandle.BackingList]);
+                transactions.Add(new Transaction(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, nextCandle.Open,
+                    TransactionType.Buy, quantity, cashOut));
+                Debug.WriteLine($"{nextCandle.DateTime}: Buying {quantity:F10} at {nextCandle.Open:F10} for {cashOut:F10}");
+                OnBought?.Invoke(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, nextCandle.Open,
+                    quantity, cashOut, assetCashMap[indexedCandle.BackingList]);
             }
         }
 
@@ -108,16 +113,17 @@ namespace Trady.Analysis.Backtest
             if (assetCashMap.TryGetValue(indexedCandle.BackingList, out _))
             {
                 var nextCandle = indexedCandle.Next;
+                if (nextCandle == null) return;
                 var lastTransaction = transactions.LastOrDefault(t => t.Candles.Equals(indexedCandle.BackingList));
                 if (lastTransaction == null) return;
                 if (lastTransaction.Type == TransactionType.Sell)
                     return;
-
-                decimal cashIn = nextCandle.Open * lastTransaction.Quantity - premium;
-                decimal plRatio = (cashIn - lastTransaction.AbsoluteCashFlow) / lastTransaction.AbsoluteCashFlow;
+                if (lastTransaction.Price * 1.03M > nextCandle.Open) return;
+                var cashIn = (nextCandle.Open * (100 - premium) / 100 * lastTransaction.Quantity);
+                var plRatio = (cashIn - lastTransaction.AbsoluteCashFlow) / lastTransaction.AbsoluteCashFlow;
                 assetCashMap[indexedCandle.BackingList] += cashIn;
-
-                transactions.Add(new Transaction(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, TransactionType.Sell, lastTransaction.Quantity, cashIn));
+                transactions.Add(new Transaction(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, nextCandle.Open, TransactionType.Sell, lastTransaction.Quantity, cashIn));
+                Debug.WriteLine($"{nextCandle.DateTime}: Selling {lastTransaction.Quantity:F10} at {nextCandle.Open:F10} for {cashIn:F10} Profit: {plRatio:P2}");
                 OnSold?.Invoke(indexedCandle.BackingList, nextCandle.Index, nextCandle.DateTime, nextCandle.Open, lastTransaction.Quantity, cashIn, assetCashMap[indexedCandle.BackingList], plRatio);
             }
         }

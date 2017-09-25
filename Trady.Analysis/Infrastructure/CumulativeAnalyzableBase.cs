@@ -20,15 +20,20 @@ namespace Trady.Analysis.Infrastructure
             else
             {
                 // get start index of calculation to cache
-                int cacheStartIndex = Cache.Keys.DefaultIfEmpty(InitialValueIndex).Where(k => k >= InitialValueIndex).Max();
-                for (int i = cacheStartIndex; i < index; i++)
+                var selection = Cache.Keys.DefaultIfEmpty(InitialValueIndex).Where(k => k >= InitialValueIndex)
+                    .ToList();
+                if (selection.Any())
                 {
-                    var prevTick = Cache.GetOrAdd(i, _i => ComputeByIndexImpl(mappedInputs, _i));
-                    tick = ComputeCumulativeValue(mappedInputs, i + 1, prevTick);
+                    var cacheStartIndex = selection.Max();
+                    for (int i = cacheStartIndex; i < index; i++)
+                    {
+                        var prevTick = Cache.GetOrAdd(i, _i => ComputeByIndexImpl(mappedInputs, _i));
+                        tick = ComputeCumulativeValue(mappedInputs, i + 1, prevTick);
 
-                    // The result will be cached in the base class for the return tick
-                    if (i < index - 1)
-                        Cache.AddOrUpdate(i + 1, tick, (_i, _t) => tick);
+                        // The result will be cached in the base class for the return tick
+                        if (i < index - 1)
+                            Cache.AddOrUpdate(i + 1, tick, (_i, _t) => tick);
+                    }
                 }
             }
 
