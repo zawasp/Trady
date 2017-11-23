@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
   </PropertyGroup>
     <PropertyGroup>
     <Description>Csv importer module of Trady, a handy library for computing technical indicators, based on .NET Standard 2.0</Description>
@@ -29,7 +29,10 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="2.16.3" />
+    <PackageReference Include="CsvHelper" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
+	<Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Trady.Core\Trady.Core.csproj" />

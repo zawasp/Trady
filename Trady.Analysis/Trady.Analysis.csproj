@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <!--<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />-->
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <Description>Analysis module of Trady, a handy library for computing technical indicators, based on .NET Standard 2.0</Description>
@@ -35,7 +35,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.3.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.4.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
   </ItemGroup>
