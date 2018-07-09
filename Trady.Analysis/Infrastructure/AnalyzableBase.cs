@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Trady.Core;
 using Trady.Core.Infrastructure;
+using Trady.Analysis.Extension;
 
 namespace Trady.Analysis.Infrastructure
 {
@@ -36,10 +37,10 @@ namespace Trady.Analysis.Infrastructure
             _mappedInputs = inputs.Select(inputMapper).ToList();
             if (_isTInputIOhlcvData)
             {
-                _mappedDateTimes = inputs.Select(c => (c as IOhlcv).DateTime).ToList();
+                _mappedDateTimes = inputs.Cast<IOhlcv>().Select(c => c.DateTime).ToList();
             }
 
-            Cache = new ConcurrentDictionary<int, TOutputToMap>();
+            Cache = new Dictionary<int, TOutputToMap>();
         }
 
 		public TOutput this[int index] => Map(ComputeByIndex, index);
@@ -56,7 +57,7 @@ namespace Trady.Analysis.Infrastructure
 
         protected virtual int GetComputeEndIndex(int? endIndex) => endIndex ?? _mappedInputs.Count - 1;
 
-		protected ConcurrentDictionary<int, TOutputToMap> Cache { get; }
+		protected IDictionary<int, TOutputToMap> Cache { get; }
 
 		#region IAnalyzable implementation
 
@@ -104,7 +105,7 @@ namespace Trady.Analysis.Infrastructure
             }
 		}
 
-		internal protected TOutputToMap ComputeByIndex(int index) => Cache.GetOrAdd(index, i => ComputeByIndexImpl(_mappedInputs, i));
+        protected internal TOutputToMap ComputeByIndex(int index) => Cache.GetOrAdd(index, i => ComputeByIndexImpl(_mappedInputs, i));
 
         #endregion
     }

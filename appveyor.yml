@@ -3,6 +3,8 @@ image: Visual Studio 2017
 before_build:
 - cmd: dotnet restore
 build:
+  publish_nuget: true
+  publish_nuget_symbols: true
   verbosity: minimal
 after_build:
 - cmd: dotnet pack
@@ -18,8 +20,8 @@ artifacts:
 - path: Trady.Importer.Stooq/bin/Debug/Trady.Importer.Stooq.*.nupkg
 - path: Trady.Importer.Yahoo/bin/Debug/Trady.Importer.Yahoo.*.nupkg
 deploy:
-- provider: NuGet
+  provider: NuGet
   api_key:
-    secure: acSSgAlUNA/OCqX0TVICWNqcNcYgBJi01ynOZwXGhTNGVNtRQiv4FIJFsoYnuSgB
+    secure: Q0wn/s/Hz++CAXsroPtrrzn6D58oUtxVpjCmCsxdgVoywVIzfErcCIrtb/FOfEd5
   on:
-    branch: master
+    branch: v3.1
