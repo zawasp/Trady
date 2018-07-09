@@ -7,35 +7,40 @@ using System.Linq;
 using System.Reflection;
 using Trady.Core;
 using Trady.Core.Infrastructure;
+using Trady.Analysis.Extension;
 
 namespace Trady.Analysis.Infrastructure
 {
     /// <summary>
     /// Generic base class for indicators & pattern matchers with in/out map
+    /// </summary>
     /// <typeparam name="TInput">Source input type</typeparam>
     /// <typeparam name="TMappedInput">Mapped input type</typeparam>
     /// <typeparam name="TOutputToMap">Output type computed by mapped input type</typeparam>
     /// <typeparam name="TOutput">Target (Mapped) output type</typeparam>
-    /// </summary>
     public abstract class AnalyzableBase<TInput, TMappedInput, TOutputToMap, TOutput> : IAnalyzable<TOutput>
     {
         private readonly bool _isTInputIOhlcvData, _isTOutputAnalyzableTick;
 
         internal protected readonly IReadOnlyList<TMappedInput> _mappedInputs;
-        readonly IReadOnlyList<DateTimeOffset> _mappedDateTimes;
+        private readonly IReadOnlyList<DateTimeOffset> _mappedDateTimes;
 
         protected AnalyzableBase(IEnumerable<TInput> inputs, Func<TInput, TMappedInput> inputMapper)
         {
             _isTInputIOhlcvData = typeof(IOhlcv).IsAssignableFrom(typeof(TInput));
             _isTOutputAnalyzableTick = typeof(IAnalyzableTick<TOutputToMap>).IsAssignableFrom(typeof(TOutput));
             if (_isTInputIOhlcvData != _isTOutputAnalyzableTick)
+            {
                 throw new ArgumentException("TInput, TOutput not matched!");
+            }
 
             _mappedInputs = inputs.Select(inputMapper).ToList();
             if (_isTInputIOhlcvData)
-                _mappedDateTimes = inputs.Select(c => (c as IOhlcv).DateTime).ToList();
+            {
+                _mappedDateTimes = inputs.Cast<IOhlcv>().Select(c => c.DateTime).ToList();
+            }
 
-            Cache = new ConcurrentDictionary<int, TOutputToMap>();
+            Cache = new Dictionary<int, TOutputToMap>();
         }
 
 		public TOutput this[int index] => Map(ComputeByIndex, index);
@@ -52,7 +57,7 @@ namespace Trady.Analysis.Infrastructure
 
         protected virtual int GetComputeEndIndex(int? endIndex) => endIndex ?? _mappedInputs.Count - 1;
 
-		protected ConcurrentDictionary<int, TOutputToMap> Cache { get; }
+		protected IDictionary<int, TOutputToMap> Cache { get; }
 
 		#region IAnalyzable implementation
 
@@ -100,7 +105,7 @@ namespace Trady.Analysis.Infrastructure
             }
 		}
 
-		internal protected TOutputToMap ComputeByIndex(int index) => Cache.GetOrAdd(index, i => ComputeByIndexImpl(_mappedInputs, i));
+        protected internal TOutputToMap ComputeByIndex(int index) => Cache.GetOrAdd(index, i => ComputeByIndexImpl(_mappedInputs, i));
 
         #endregion
     }

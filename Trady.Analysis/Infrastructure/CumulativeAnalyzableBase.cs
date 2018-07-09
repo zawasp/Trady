@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Trady.Analysis.Extension;
 
 namespace Trady.Analysis.Infrastructure
 {
@@ -14,9 +15,13 @@ namespace Trady.Analysis.Infrastructure
         {
             var tick = default(TOutputToMap);
             if (index < InitialValueIndex)
+            {
                 tick = ComputeNullValue(mappedInputs, index);
+            }
             else if (index == InitialValueIndex)
+            {
                 tick = ComputeInitialValue(mappedInputs, index);
+            }
             else
             {
                 // get start index of calculation to cache
@@ -28,7 +33,9 @@ namespace Trady.Analysis.Infrastructure
 
                     // The result will be cached in the base class for the return tick
                     if (i < index - 1)
+                    {
                         Cache.AddOrUpdate(i + 1, tick, (_i, _t) => tick);
+                    }
                 }
             }
 

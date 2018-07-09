@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Trady.Analysis.Infrastructure;
@@ -34,9 +34,31 @@ namespace Trady.Analysis
 
         public int Index { get; }
 
-        public IIndexedOhlcv Prev => Index - 1 >= 0 ? new IndexedCandle(BackingList, Index - 1) : null;
+        public IIndexedOhlcv Prev
+        {
+            get
+            {
+                if (Index - 1 < 0)
+                    return null;
+                return new IndexedCandle(BackingList, Index - 1)
+                {
+                    Context = Context
+                };
+            }
+        }
 
-        public IIndexedOhlcv Next => Index + 1 < BackingList.Count() ? new IndexedCandle(BackingList, Index + 1) : null;
+        public IIndexedOhlcv Next
+        {
+            get
+            {
+                if (Index + 1 >= BackingList.Count())
+                    return null;
+                return new IndexedCandle(BackingList, Index + 1)
+                {
+                    Context = Context
+                };
+            }
+        }
 
         public IOhlcv Underlying => BackingList.ElementAt(Index);
 
@@ -67,14 +89,20 @@ namespace Trady.Analysis
         public TAnalyzable Get<TAnalyzable>(params object[] @params) where TAnalyzable : IAnalyzable
         {
             if (Context == null)
+            {
                 return AnalyzableFactory.CreateAnalyzable<TAnalyzable>(BackingList, @params);
+            }
+
             return Context.Get<TAnalyzable>(@params);
         }
 
         public IFuncAnalyzable<IAnalyzableTick<decimal?>> GetFunc(string name, params decimal[] @params)
         {
             if (Context == null)
+            {
                 return FuncAnalyzableFactory.CreateAnalyzable(name, BackingList, @params);
+            }
+
             return (IFuncAnalyzable<IAnalyzableTick<decimal?>>)Context.GetFunc(name, @params);
         }
 

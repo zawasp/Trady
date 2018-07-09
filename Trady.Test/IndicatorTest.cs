@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,8 @@ namespace Trady.Test
         protected async Task<IEnumerable<IOhlcv>> ImportIOhlcvDatasAsync()
         {
             // Last record: 09/18/2017
-            var csvImporter = new CsvImporter("fb.csv", new CultureInfo("en-US"));
+            var csvImporter = new CsvImporter("fb.csv", CultureInfo.GetCultureInfo("en-US"));
+
             return await csvImporter.ImportAsync("fb");
             //var yahooImporter = new YahooFinanceImporter();
             //var candles = await yahooImporter.ImportAsync("FB");
@@ -40,7 +41,7 @@ namespace Trady.Test
         public async Task TestSmiAsync()
         {
             var candles = await ImportIOhlcvDatasAsync();
-            var result = candles.Smi(15, 6, 6)[candles.Count() - 1]; 
+            var result = candles.Smi(15, 6, 6)[candles.Count() - 1];
             Assert.IsTrue(result.Tick.Value.IsApproximatelyEquals(55.1868m));
         }
 
@@ -48,7 +49,7 @@ namespace Trady.Test
         public async Task TestStochRsiAsync()
         {
             var candles = await ImportIOhlcvDatasAsync();
-            var result = candles.StochRsi(14)[candles.Count() - 1];  
+            var result = candles.StochRsi(14)[candles.Count() - 1];
             Assert.IsTrue(0m.IsApproximatelyEquals(result.Tick.Value));
 
             var result2 = candles.StochRsi(14).Single(v => v.DateTime == new DateTime(2017, 9, 15));
